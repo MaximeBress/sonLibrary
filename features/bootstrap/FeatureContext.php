@@ -5,6 +5,8 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 
+use AppBundle\Entity\Book;
+
 /**
  * Defines application features from the specific context.
  */
@@ -19,6 +21,12 @@ class FeatureContext implements Context
      */
     public function __construct()
     {
+        // creer un book
+        $this->livre = new Book();
+        // creer un utilisateur
+        $this->livre = new User();
+        // connexion à la base
+        $this->em = $this->getDoctrine()->getManager();
     }
 
     /**
@@ -34,6 +42,12 @@ class FeatureContext implements Context
      */
     public function jajouteUnNouveauLivreNommeAvecLeResume($arg1, $arg2)
     {
+        $this->livre->setTitre($arg1);
+        $this->livre->setDescription($arg1);
+
+        $this->em->persist($this->livre);
+        $this->em->flush();
+
         throw new PendingException();
     }
 
@@ -42,6 +56,8 @@ class FeatureContext implements Context
      */
     public function jeDoisTrouverMonNouveauLivreDansLaListe($arg1)
     {
+        $livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
+        $this->em
         throw new PendingException();
     }
 
