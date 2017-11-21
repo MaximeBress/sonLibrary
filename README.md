@@ -18,3 +18,8 @@ location / {
 }
 sudo service nginx restart
 ```
+
+# Pour Behat : génération des snippets grâce au fichier book.feature créé
+```
+vendor/behat/behat/bin/behat --dry-run --append-snippets
+```
