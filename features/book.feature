@@ -20,7 +20,7 @@ Feature: Gestion des livres
     Scenario: Supprimer un livre
         Given je suis connecté en tant qu'administrateur
         And il existe un livre nommé "Dix petits nègres"
-        When je supprime ce libre
+        When je supprime ce livre
         Then ce livre ne doit plus apparaître dans la liste des livres existants
 
     Scenario: Consulter un livre
