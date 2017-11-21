@@ -38,17 +38,9 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Then je dois trouver mon nouveau livre dans la liste
+     * @Then je dois trouver mon nouveau livre :arg1 dans la liste
      */
-    public function jeDoisTrouverMonNouveauLivreDansLaListe()
-    {
-        throw new PendingException();
-    }
-
-    /**
-     * @Given je suis connecté en tant qu"administrateur
-     */
-    public function jeSuisConnecteEnTantQuAdministrateur()
+    public function jeDoisTrouverMonNouveauLivreDansLaListe($arg1)
     {
         throw new PendingException();
     }
@@ -62,9 +54,9 @@ class FeatureContext implements Context
     }
 
     /**
-     * @When j'édite la description de ce livre pour devenir :arg1
+     * @When j'édite la description du livre :arg1 pour devenir :arg2
      */
-    public function jediteLaDescriptionDeCeLivrePourDevenir($arg1)
+    public function jediteLaDescriptionDeCeLivrePourDevenir($arg1, $arg2)
     {
         throw new PendingException();
     }
@@ -78,17 +70,17 @@ class FeatureContext implements Context
     }
 
     /**
-     * @When je supprime ce livre
+     * @When je supprime le livre :arg1
      */
-    public function jeSupprimeCeLivre()
+    public function jeSupprimeCeLivre($arg1)
     {
         throw new PendingException();
     }
 
     /**
-     * @Then ce livre ne doit plus apparaître dans la liste des livres existants
+     * @Then ce livre :arg1 ne doit plus apparaître dans la liste des livres existants
      */
-    public function ceLivreNeDoitPlusApparaitreDansLaListeDesLivresExistants()
+    public function ceLivreNeDoitPlusApparaitreDansLaListeDesLivresExistants($arg1)
     {
         throw new PendingException();
     }
@@ -102,9 +94,9 @@ class FeatureContext implements Context
     }
 
     /**
-     * @Then je peux lire le titre du livre et sa description
+     * @Then je peux lire le titre du livre :arg1 et sa description
      */
-    public function jePeuxLireLeTitreDuLivreEtSaDescription()
+    public function jePeuxLireLeTitreDuLivreEtSaDescription($arg1)
     {
         throw new PendingException();
     }
