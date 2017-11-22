@@ -24,7 +24,7 @@ class BookController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $books = $em->getRepository('AppBundle:Book')->findAll();
+        $books = $em->getRepository('AppBundle:Book')->findByUser($this->getUser()->getId());
 
         return $this->render('book/index.html.twig', array(
             'books' => $books,
@@ -45,6 +45,7 @@ class BookController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+            $book->setUser($this->getUser());
             $em->persist($book);
             $em->flush();
 

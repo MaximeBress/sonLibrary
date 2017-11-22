@@ -13,9 +13,9 @@
             </tr>
         </thead>
         <tbody>
-        {% for book in books %}
+        {% for k,book in books %}
             <tr>
-                <td><a href="{{ path('book_show', { 'id': book.id }) }}">{{ book.id }}</a></td>
+                <td><a href="{{ path('book_show', { 'id': book.id }) }}">{{ k+1 }}</a></td>
                 <td>{{ book.titre }}</td>
                 <td>{{ book.description }}</td>
                 <td>
