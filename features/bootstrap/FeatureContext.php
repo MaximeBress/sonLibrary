@@ -5,28 +5,24 @@ use Behat\Behat\Context\Context;
 use Behat\Gherkin\Node\PyStringNode;
 use Behat\Gherkin\Node\TableNode;
 
+use Behat\MinkExtension\Context\MinkContext;
+
+use Behat\Symfony2Extension\Context\KernelAwareContext;
+use Behat\Symfony2Extension\Context\KernelDictionary;
+
 use AppBundle\Entity\Book;
 
 /**
  * Defines application features from the specific context.
  */
-class FeatureContext implements Context
+class FeatureContext extends MinkContext implements KernelAwareContext
 {
-    /**
-     * Initializes context.
-     *
-     * Every scenario gets its own context instance.
-     * You can also pass arbitrary arguments to the
-     * context constructor through behat.yml.
-     */
+    use KernelDictionary;
+    
     public function __construct()
     {
-        // creer un book
+        // Création d'un objet Book pour travailler dessus
         $this->livre = new Book();
-        // creer un utilisateur
-        $this->livre = new User();
-        // connexion à la base
-        $this->em = $this->getDoctrine()->getManager();
     }
 
     /**
@@ -34,7 +30,9 @@ class FeatureContext implements Context
      */
     public function jeSuisConnecteEnTantQuadministrateur()
     {
-        throw new PendingException();
+        // $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        // throw new PendingException();
+        return true;
     }
 
     /**
@@ -42,13 +40,18 @@ class FeatureContext implements Context
      */
     public function jajouteUnNouveauLivreNommeAvecLeResume($arg1, $arg2)
     {
+        $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+
         $this->livre->setTitre($arg1);
         $this->livre->setDescription($arg1);
 
         $this->em->persist($this->livre);
-        $this->em->flush();
-
-        throw new PendingException();
+        
+        try {
+            $this->em->flush();
+        } catch (Exception $e) {
+            throw new PendingException($e->getMessage());
+        }
     }
 
     /**
@@ -56,9 +59,15 @@ class FeatureContext implements Context
      */
     public function jeDoisTrouverMonNouveauLivreDansLaListe($arg1)
     {
-        $livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
-        $this->em
-        throw new PendingException();
+        $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+
+        $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
+        
+        if ($this->livre) {
+            return true;
+        } else {
+            throw new PendingException("le livre n'existe pas dans la liste");
+        }
     }
 
     /**
@@ -66,7 +75,16 @@ class FeatureContext implements Context
      */
     public function ilExisteUnLivreNomme($arg1)
     {
-        throw new PendingException();
+        $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        
+        $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
+
+        if ($this->livre) {
+            return true;
+        } else {
+            throw new PendingException("le livre est vide");
+        }
+
     }
 
     /**
@@ -74,7 +92,21 @@ class FeatureContext implements Context
      */
     public function jediteLaDescriptionDeCeLivrePourDevenir($arg1, $arg2)
     {
-        throw new PendingException();
+        $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        
+        $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
+
+        $this->livre->setDescription($arg1);
+        
+        $this->em->persist($this->livre);
+        
+        try {
+            $this->em->flush();
+        } catch (Exception $e) {
+            throw new PendingException($e->getMessage());
+        }
+
+        return true;
     }
 
     /**
@@ -82,7 +114,18 @@ class FeatureContext implements Context
      */
     public function leLivreDoitMaintenantAvoirLaNouvelleDescription($arg1, $arg2)
     {
-        throw new PendingException();
+        $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        
+        $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
+
+        $description = $this->livre->getDescription();
+
+        if ($description === $arg2) {
+            return true;
+        } else {
+            throw new PendingException("Description non mise a jour correctement");            
+        }
+
     }
 
     /**
@@ -90,7 +133,19 @@ class FeatureContext implements Context
      */
     public function jeSupprimeCeLivre($arg1)
     {
-        throw new PendingException();
+        $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        
+        $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
+
+        $this->em->remove($this->livre);
+        
+        try {
+            $this->em->flush();
+        } catch (Exception $e) {
+            throw new PendingException($e->getMessage());
+        }
+
+        return true;
     }
 
     /**
@@ -98,7 +153,15 @@ class FeatureContext implements Context
      */
     public function ceLivreNeDoitPlusApparaitreDansLaListeDesLivresExistants($arg1)
     {
-        throw new PendingException();
+        $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        
+        $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
+
+        if (!$this->livre) {
+            return true;
+        } else {
+            throw new PendingException("le livre est vide");
+        }
     }
 
     /**
@@ -106,7 +169,15 @@ class FeatureContext implements Context
      */
     public function jeConsulteLeLivre($arg1)
     {
-        throw new PendingException();
+        $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        
+        $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
+
+        if ($this->livre) {
+            return true;
+        } else {
+            throw new PendingException("le livre est vide");
+        }
     }
 
     /**
@@ -114,6 +185,16 @@ class FeatureContext implements Context
      */
     public function jePeuxLireLeTitreDuLivreEtSaDescription($arg1)
     {
-        throw new PendingException();
+        $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        
+        $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
+
+        if ($this->livre->getDescription() && $this->livre->getTitre()) {
+            return true;
+        } else if (!$this->livre->getDescription()) {
+            throw new PendingException("la description du livre est vide");
+        } else if (!$this->livre->getTitre()) {
+            throw new PendingException("le titre du livre est vide");
+        } 
     }
 }
