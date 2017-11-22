@@ -3,13 +3,13 @@
 {% block body %}
     <h1>Liste de mes livres</h1>
 
-    <table>
+    <table class="responsive-table">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Titre</th>
                 <th>Description</th>
-                <th>Actions</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -19,12 +19,25 @@
                 <td>{{ book.titre }}</td>
                 <td>{{ book.description }}</td>
                 <td>
-                    <ul>
+                    <!-- Dropdown Trigger -->
+                    <a class='dropdown-button btn' href='#' data-activates='dropdown1'>Actions</a>
+
+                    <!-- Dropdown Structure -->
+                    <ul id='dropdown1' class='dropdown-content'>
                         <li>
-                            <a href="{{ path('book_show', { 'id': book.id }) }}">show</a>
+                            <a href="{{ path('book_show', { 'id': book.id }) }}">
+                                Voir
+                            </a>
                         </li>
                         <li>
-                            <a href="{{ path('book_edit', { 'id': book.id }) }}">edit</a>
+                            <a href="{{ path('book_edit', { 'id': book.id }) }}">
+                                Modifier
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ path('book_edit', { 'id': book.id }) }}">
+                                Supprimer
+                            </a>
                         </li>
                     </ul>
                 </td>
@@ -35,7 +48,7 @@
 
     <ul>
         <li>
-            <a href="{{ path('book_new') }}">Create a new book</a>
+            <a class="waves-effect waves-light btn" href="{{ path('book_new') }}">Ajouter un livre</a>
         </li>
     </ul>
 {% endblock %}
