@@ -38,10 +38,10 @@ return [
     // and store them locally
     'connections'      => [
         'production' => [
-            'host'      => '192.168.33.10/',
-            'username'  => 'vagrant',
-            'password'  => 'vagrant',
-            'key'       => '/home/vagrant/.ssh/id_rsa',
+            'host'      => '192.168.33.10',
+            'username'  => 'jenkins',
+            'password'  => 'jenkins',
+            'key'       => '/var/lib/jenkins/.ssh/id_rsa',
             'keyphrase' => '',
             'agent'     => '',
             'db_role'   => true,
