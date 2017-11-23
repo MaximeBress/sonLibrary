@@ -26,7 +26,7 @@ class FeatureContext extends MinkContext implements KernelAwareContext
     protected $user;
     protected $em;
     protected $container;
-    
+
     public function __construct()
     {
         // $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
@@ -41,12 +41,12 @@ class FeatureContext extends MinkContext implements KernelAwareContext
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
         $this->container = $this->getContainer();
 
-        $this->user = $this->em->getRepository('UserBundle:user')->findOneByUsername($arg1);
+        $this->user = $this->em->getRepository('UserBundle:User')->findOneByUsername($arg1);
 
         if ($this->user) {
             return $this->user;
         } else {
-            throw new PendingException("l'utilisateur $arg1 n'existe pas");            
+            throw new PendingException("l'utilisateur $arg1 n'existe pas");
         }
     }
 
@@ -64,7 +64,7 @@ class FeatureContext extends MinkContext implements KernelAwareContext
         $this->livre->setUser($this->user);
 
         $this->em->persist($this->livre);
-        
+
         try {
             $this->em->flush();
         } catch (Exception $e) {
@@ -81,7 +81,7 @@ class FeatureContext extends MinkContext implements KernelAwareContext
         $this->container = $this->getContainer();
 
         $this->bibliotheque = $this->em->getRepository("AppBundle:Book")->findByUser($this->user->getId());
-        
+
         foreach ($this->bibliotheque as $livre) {
             if ($livre->getTitre() === $arg1)
                 return true;
@@ -120,9 +120,9 @@ class FeatureContext extends MinkContext implements KernelAwareContext
         $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
 
         $this->livre->setDescription($arg2);
-        
+
         $this->em->persist($this->livre);
-        
+
         try {
             $this->em->flush();
         } catch (Exception $e) {
@@ -147,7 +147,7 @@ class FeatureContext extends MinkContext implements KernelAwareContext
         if ($description === $arg2) {
             return true;
         } else {
-            throw new PendingException("Description non mise a jour correctement");            
+            throw new PendingException("Description non mise a jour correctement");
         }
 
     }
@@ -162,7 +162,7 @@ class FeatureContext extends MinkContext implements KernelAwareContext
 
         $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
         $this->em->remove($this->livre);
-    
+
         try {
             $this->em->flush();
             $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
@@ -226,7 +226,7 @@ class FeatureContext extends MinkContext implements KernelAwareContext
             throw new PendingException("la description du livre est vide");
         } else if (!$this->livre->getTitre()) {
             throw new PendingException("le titre du livre est vide");
-        } 
+        }
     }
 
     /**
