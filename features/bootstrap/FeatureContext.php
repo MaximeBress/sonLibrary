@@ -10,7 +10,9 @@ use Behat\MinkExtension\Context\MinkContext;
 use Behat\Symfony2Extension\Context\KernelAwareContext;
 use Behat\Symfony2Extension\Context\KernelDictionary;
 
+
 use AppBundle\Entity\Book;
+use UserBundle\Entity\User;
 
 /**
  * Defines application features from the specific context.
@@ -18,21 +20,34 @@ use AppBundle\Entity\Book;
 class FeatureContext extends MinkContext implements KernelAwareContext
 {
     use KernelDictionary;
+
+    protected $livre;
+    protected $bibliotheque;
+    protected $user;
+    protected $em;
+    protected $container;
     
     public function __construct()
     {
-        // Création d'un objet Book pour travailler dessus
-        $this->livre = new Book();
+        // $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        // $this->container = $this->getContainer();
     }
 
     /**
-     * @Given je suis connecté en tant qu'administrateur
+     * @Given je suis connecté en tant que :arg1
      */
-    public function jeSuisConnecteEnTantQuadministrateur()
+    public function jeSuisConnecteEnTantQuadministrateur($arg1)
     {
-        // $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        // throw new PendingException();
-        return true;
+        $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $this->container = $this->getContainer();
+
+        $this->user = $this->em->getRepository('UserBundle:user')->findOneByUsername($arg1);
+
+        if ($this->user) {
+            return $this->user;
+        } else {
+            throw new PendingException("l'utilisateur $arg1 n'existe pas");            
+        }
     }
 
     /**
@@ -41,9 +56,12 @@ class FeatureContext extends MinkContext implements KernelAwareContext
     public function jajouteUnNouveauLivreNommeAvecLeResume($arg1, $arg2)
     {
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $this->container = $this->getContainer();
 
+        $this->livre = new Book();
         $this->livre->setTitre($arg1);
-        $this->livre->setDescription($arg1);
+        $this->livre->setDescription($arg2);
+        $this->livre->setUser($this->user);
 
         $this->em->persist($this->livre);
         
@@ -60,14 +78,17 @@ class FeatureContext extends MinkContext implements KernelAwareContext
     public function jeDoisTrouverMonNouveauLivreDansLaListe($arg1)
     {
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
+        $this->container = $this->getContainer();
 
-        $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
+        $this->bibliotheque = $this->em->getRepository("AppBundle:Book")->findByUser($this->user->getId());
         
-        if ($this->livre) {
-            return true;
-        } else {
-            throw new PendingException("le livre n'existe pas dans la liste");
+        foreach ($this->bibliotheque as $livre) {
+            if ($livre->getTitre() === $arg1)
+                return true;
         }
+
+        // return false;
+        throw new PendingException("le livre n'existe pas dans la liste");
     }
 
     /**
@@ -76,7 +97,8 @@ class FeatureContext extends MinkContext implements KernelAwareContext
     public function ilExisteUnLivreNomme($arg1)
     {
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        
+        $this->container = $this->getContainer();
+
         $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
 
         if ($this->livre) {
@@ -93,10 +115,11 @@ class FeatureContext extends MinkContext implements KernelAwareContext
     public function jediteLaDescriptionDeCeLivrePourDevenir($arg1, $arg2)
     {
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        
+        $this->container = $this->getContainer();
+
         $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
 
-        $this->livre->setDescription($arg1);
+        $this->livre->setDescription($arg2);
         
         $this->em->persist($this->livre);
         
@@ -115,7 +138,8 @@ class FeatureContext extends MinkContext implements KernelAwareContext
     public function leLivreDoitMaintenantAvoirLaNouvelleDescription($arg1, $arg2)
     {
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        
+        $this->container = $this->getContainer();
+
         $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
 
         $description = $this->livre->getDescription();
@@ -134,13 +158,14 @@ class FeatureContext extends MinkContext implements KernelAwareContext
     public function jeSupprimeCeLivre($arg1)
     {
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        
-        $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
+        $this->container = $this->getContainer();
 
+        $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
         $this->em->remove($this->livre);
-        
+    
         try {
             $this->em->flush();
+            $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
         } catch (Exception $e) {
             throw new PendingException($e->getMessage());
         }
@@ -154,13 +179,17 @@ class FeatureContext extends MinkContext implements KernelAwareContext
     public function ceLivreNeDoitPlusApparaitreDansLaListeDesLivresExistants($arg1)
     {
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        
+        $this->container = $this->getContainer();
+
         $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
 
-        if (!$this->livre) {
-            return true;
+        // var_dump($this->livre);
+
+
+        if ($this->livre) {
+            throw new PendingException("le livre existe toujours");
         } else {
-            throw new PendingException("le livre est vide");
+            return true;
         }
     }
 
@@ -170,7 +199,8 @@ class FeatureContext extends MinkContext implements KernelAwareContext
     public function jeConsulteLeLivre($arg1)
     {
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        
+        $this->container = $this->getContainer();
+
         $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
 
         if ($this->livre) {
@@ -186,7 +216,8 @@ class FeatureContext extends MinkContext implements KernelAwareContext
     public function jePeuxLireLeTitreDuLivreEtSaDescription($arg1)
     {
         $this->em = $this->getContainer()->get('doctrine.orm.entity_manager');
-        
+        $this->container = $this->getContainer();
+
         $this->livre = $this->em->getRepository("AppBundle:Book")->findOneByTitre($arg1);
 
         if ($this->livre->getDescription() && $this->livre->getTitre()) {
@@ -197,4 +228,53 @@ class FeatureContext extends MinkContext implements KernelAwareContext
             throw new PendingException("le titre du livre est vide");
         } 
     }
+
+    /**
+     * @When j'ajoute un livre nommé :arg1 avec le résumé :arg2
+     */
+    public function jajouteUnLivreNommeAvecLeResume($arg1, $arg2)
+    {
+        return $this->jajouteUnNouveauLivreNommeAvecLeResume($arg1, $arg2);
+    }
+
+    /**
+     * @Then je dois trouver mon livre nommé :arg1 dans la liste
+     */
+    public function jeDoisTrouverMonLivreNommeDansLaListe($arg1)
+    {
+        return $this->jeDoisTrouverMonNouveauLivreDansLaListe($arg1);
+    }
+
+    /**
+     * @When j'édite la description du livre nommé :arg1 pour devenir :arg2
+     */
+    public function jediteLaDescriptionDuLivreNommePourDevenir($arg1, $arg2)
+    {
+        return $this->jediteLaDescriptionDeCeLivrePourDevenir($arg1, $arg2);
+    }
+
+    /**
+     * @When je supprime le livre nommé :arg1
+     */
+    public function jeSupprimeLeLivreNomme($arg1)
+    {
+        return $this->jeSupprimeCeLivre($arg1);
+    }
+
+    /**
+     * @Then le livre nommé :arg1 ne doit plus exister
+     */
+    public function leLivreNommeNeDoitPlusExister($arg1)
+    {
+        return $this->ceLivreNeDoitPlusApparaitreDansLaListeDesLivresExistants($arg1);
+    }
+
+    /**
+     * @Given j'avais ajouté un livre nommé :arg1 avec le résumé :arg2
+     */
+    public function javaisAjouteUnLivreNommeAvecLeResume($arg1, $arg2)
+    {
+        return $this->jajouteUnNouveauLivreNommeAvecLeResume($arg1, $arg2);
+    }
+
 }
