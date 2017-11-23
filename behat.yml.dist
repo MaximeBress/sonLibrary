@@ -10,5 +10,3 @@ default:
                     selenium2: ~
     gherkin:
         cache: ~
-
-BEHAT_PARAMS='{"gherkin" : {"cache" : null}}' vendor/bin/behat
