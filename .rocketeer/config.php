@@ -39,8 +39,8 @@ return [
     'connections'      => [
         'production' => [
             'host'      => 'localhost',
-            'username'  => 'root',
-            'password'  => 'secret',
+            'username'  => 'vagrant',
+            'password'  => 'vagrant',
             'key'       => '/home/vagrant/.ssh/id_rsa',
             'keyphrase' => '',
             'agent'     => '',
