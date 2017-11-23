@@ -4,7 +4,7 @@ namespace UserBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
-use DoctrineCommonCollectionsArrayCollection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * User

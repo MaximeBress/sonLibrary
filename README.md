@@ -5,6 +5,7 @@ sonLibrary
 
 ```sh
 composer install
+composer dump-autoload
 
 mysql
 create database sonlibrary;
@@ -17,6 +18,8 @@ location / {
     try_files $uri /app_dev.php$is_args$args;
 }
 sudo service nginx restart
+
+php app/console fos:user:create admin --super-admin
 ```
 
 # Pour Behat : génération des snippets grâce au fichier book.feature créé
