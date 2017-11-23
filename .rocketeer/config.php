@@ -38,7 +38,7 @@ return [
     // and store them locally
     'connections'      => [
         'production' => [
-            'host'      => '192.168.33.10',
+            'host'      => 'localhost',
             'username'  => 'jenkins',
             'password'  => 'jenkins',
             'key'       => '/var/lib/jenkins/.ssh/id_rsa',
