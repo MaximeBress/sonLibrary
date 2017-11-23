@@ -8,3 +8,5 @@ default:
                     symfony2: ~
                 javascript:
                     selenium2: ~
+    gherkin:
+        cache: ~
